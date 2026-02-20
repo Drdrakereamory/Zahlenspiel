@@ -5,10 +5,10 @@
 
 :root {
   /* Hintergründe */
-  --bg:          #0d1b2a;
-  --card-bg:     #132335;
-  --card-border: #1e3a52;
-  --input-bg:    #091520;
+  --bg:          #1a0a0a;
+  --card-bg:     #2a1010;
+  --card-border: #401a1a;
+  --input-bg:    #100606;
 
   /* Hauptfarben */
   --orange:      #f07030;
