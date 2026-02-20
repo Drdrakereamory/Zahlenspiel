@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lucky Number</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,400;0,600;0,800;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ========================
+       STARTSCREEN
+  ======================== -->
+  <div id="screen-start" class="screen active">
+    <div class="start-logo">
+      <div class="logo-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="2" width="20" height="20" rx="3"/>
+          <circle cx="8" cy="8" r="1.2" fill="currentColor" stroke="none"/>
+          <circle cx="16" cy="8" r="1.2" fill="currentColor" stroke="none"/>
+          <circle cx="8" cy="16" r="1.2" fill="currentColor" stroke="none"/>
+          <circle cx="16" cy="16" r="1.2" fill="currentColor" stroke="none"/>
+          <circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/>
+        </svg>
+      </div>
+      <h1>LUCKY <span>NUMBER</span></h1>
+      <p class="tagline">Skill oder Glück? 5 Sekunden pro Versuch.<br>10 Versuche. Ab Versuch 4 übernimmt das Chaos.</p>
+    </div>
+
+    <!-- Highscore Banner -->
+    <div class="highscore-banner" id="highscore-banner" style="display:none">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+      <span id="highscore-text">Bestzeit: —</span>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        Wähle dein Risiko
+      </div>
+      <div class="level-grid">
+        <button class="level-btn selected" id="lvl-1" onclick="selectLevel(1)">
+          <div class="level-left">
+            <div class="level-name">Warm-up</div>
+            <div class="level-desc">Zweistellig · immer genau 2 Ziffern</div>
+          </div>
+          <span class="level-range">01–99</span>
+        </button>
+        <button class="level-btn" id="lvl-2" onclick="selectLevel(2)">
+          <div class="level-left">
+            <div class="level-name">Serious Mode</div>
+            <div class="level-desc">Dreistellig · immer genau 3 Ziffern</div>
+          </div>
+          <span class="level-range">100–999</span>
+        </button>
+        <button class="level-btn" id="lvl-3" onclick="selectLevel(3)">
+          <div class="level-left">
+            <div class="level-name">No Mercy</div>
+            <div class="level-desc">Vierstellig · immer genau 4 Ziffern</div>
+          </div>
+          <span class="level-range">1000–9999</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Spielphasen
+      </div>
+      <div class="phases-list">
+        <div class="phase-item">
+          <div class="phase-dot" style="background:var(--amber)"></div>
+          <span class="phase-text"><strong>Versuch 1–3</strong> — Normales Raten. Einfach tippen.</span>
+          <span class="phase-num">1–3</span>
+        </div>
+        <div class="phase-item">
+          <div class="phase-dot" style="background:var(--orange)"></div>
+          <span class="phase-text"><strong>V4 — Slot Mode</strong> — Das Rad entscheidet.</span>
+          <span class="phase-num">4</span>
+        </div>
+        <div class="phase-item">
+          <div class="phase-dot" style="background:var(--magenta)"></div>
+          <span class="phase-text"><strong>V5 — 1 aus 10</strong> — Zehn Zahlen. Eine stimmt.</span>
+          <span class="phase-num">5</span>
+        </div>
+        <div class="phase-item">
+          <div class="phase-dot" style="background:var(--teal)"></div>
+          <span class="phase-text"><strong>V6 — Brain Mode</strong> — Löse die Gleichung.</span>
+          <span class="phase-num">6</span>
+        </div>
+        <div class="phase-item">
+          <div class="phase-dot" style="background:var(--amber)"></div>
+          <span class="phase-text"><strong>Versuch 7–10</strong> — Zurück zum Duell.</span>
+          <span class="phase-num">7–10</span>
+        </div>
+      </div>
+    </div>
+
+    <button class="start-btn" onclick="startGame()">
+      SPIEL STARTEN
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+    </button>
+  </div>
+
+  <!-- ========================
+       ÜBERGANGSSCREEN
+  ======================== -->
+  <div id="screen-transition" class="screen">
+    <div class="tr-card">
+      <div class="tr-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+      </div>
+      <div class="tr-title">AB JETZT: CHAOS</div>
+      <div class="tr-desc">Die nächsten 3 Versuche gehören nicht mehr dir allein. Der Algorithmus mischt mit.</div>
+      <div class="tr-phases">
+        <div class="tp-row tp-slot">
+          <div class="tp-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 12h10M12 7v10"/></svg>
+          </div>
+          <div class="tp-text"><strong>V4 — Slot Mode</strong> Dreh das Rad. Kein Einfluss.</div>
+          <span class="tp-badge">V4</span>
+        </div>
+        <div class="tp-row tp-choice">
+          <div class="tp-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          </div>
+          <div class="tp-text"><strong>V5 — 1 aus 10</strong> Zehn Zahlen. Wähle richtig.</div>
+          <span class="tp-badge">V5</span>
+        </div>
+        <div class="tp-row tp-brain">
+          <div class="tp-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96-.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 4.44-1.66Z"/><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96-.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-4.44-1.66Z"/></svg>
+          </div>
+          <div class="tp-text"><strong>V6 — Brain Mode</strong> Löse die Gleichung schnell.</div>
+          <span class="tp-badge">V6</span>
+        </div>
+      </div>
+      <button class="continue-btn" onclick="continueFromTransition()">
+        LOS GEHT'S
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- ========================
+       SPIELSCREEN
+  ======================== -->
+  <div id="screen-game" class="screen">
+
+    <div class="top-bar">
+      <div class="attempts-row" id="attempts-row"></div>
+      <div class="attempt-counter" id="attempt-counter">1/10</div>
+    </div>
+
+    <div class="phase-badge-wrap">
+      <div class="phase-badge normal" id="phase-badge">
+        <span id="phase-badge-icon"></span>
+        <span id="phase-badge-text">Normales Raten</span>
+      </div>
+    </div>
+
+    <div class="game-card" id="game-card">
+      <div class="game-card-top">
+        <div class="instruction" id="instruction">Tippe die Zahl ein — kein Enter nötig.</div>
+        <div class="timer-row">
+          <div class="timer-num" id="timer-num">5</div>
+          <div class="timer-track"><div class="timer-fill" id="timer-fill"></div></div>
+        </div>
+      </div>
+
+      <!-- Zone: Normal -->
+      <div id="zone-normal">
+        <div class="digit-display" id="digit-display">
+          <span class="digit-slot" id="d0">_</span>
+          <span class="digit-slot" id="d1">_</span>
+          <span class="digit-slot digit-hidden" id="d2">_</span>
+          <span class="digit-slot digit-hidden" id="d3">_</span>
+        </div>
+        <input type="number" class="hidden-input" id="main-input"
+          autocomplete="off" inputmode="numeric"
+          oninput="handleDigitInput(this.value)">
+        <div class="hint-text">Einfach tippen — automatische Auswertung</div>
+      </div>
+
+      <!-- Zone: Slot -->
+      <div id="zone-slot">
+        <div class="slot-display">
+          <div class="slot-number" id="slot-number">?</div>
+          <div class="slot-label" id="slot-label">Bereit zum Drehen</div>
+        </div>
+        <button class="slot-btn" id="slot-btn" onclick="spinSlot()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/></svg>
+          DREHEN
+        </button>
+      </div>
+
+      <!-- Zone: Choice -->
+      <div id="zone-choice">
+        <div class="choices-grid" id="choices-grid"></div>
+      </div>
+
+      <!-- Zone: Brain -->
+      <div id="zone-brain">
+        <div class="equation-display">
+          <div class="equation-text" id="equation-text">? + ? = ?</div>
+          <div class="equation-sub">Ergebnis eingeben — kein Enter nötig</div>
+        </div>
+        <div class="digit-display" id="brain-digit-display">
+          <span class="digit-slot" id="bd0">_</span>
+          <span class="digit-slot" id="bd1">_</span>
+          <span class="digit-slot digit-hidden" id="bd2">_</span>
+          <span class="digit-slot digit-hidden" id="bd3">_</span>
+        </div>
+        <input type="number" class="hidden-input" id="brain-input"
+          autocomplete="off" inputmode="numeric"
+          oninput="handleBrainInput(this.value)">
+      </div>
+    </div>
+
+    <div class="feedback-box info show" id="feedback-box">
+      <span id="feedback-icon"></span>
+      <span id="feedback-text">Viel Glück — die Zahl wartet auf dich.</span>
+    </div>
+  </div>
+
+  <!-- ========================
+       ENDSCREEN
+  ======================== -->
+  <div id="screen-end" class="screen">
+    <div class="end-card">
+      <div class="end-icon" id="end-icon"></div>
+      <div class="end-title" id="end-title">GEWONNEN</div>
+      <div class="end-sub" id="end-sub"></div>
+      <div class="end-stats">
+        <div class="end-stat">
+          <div class="end-stat-label">Versuch</div>
+          <div class="end-stat-value" id="end-attempts">—</div>
+        </div>
+        <div class="end-stat">
+          <div class="end-stat-label">Zahl war</div>
+          <div class="end-stat-value" id="end-number">—</div>
+        </div>
+        <div class="end-stat">
+          <div class="end-stat-label">Highscore</div>
+          <div class="end-stat-value" id="end-highscore">—</div>
+        </div>
+      </div>
+      <div class="end-quip" id="end-quip"></div>
+      <button class="end-btn" onclick="goToStart()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/></svg>
+        NOCHMAL SPIELEN
+      </button>
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>
