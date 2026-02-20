@@ -84,8 +84,8 @@ function BadgeIcon({ mode }: { mode: GameMode }) {
 
 function getInstruction(mode: GameMode, digits: number): React.ReactNode {
   if (mode === 'normal') return <><strong>Tippe die Zahl ein</strong> — automatische Auswertung nach {digits} Ziffern.</>
-  if (mode === 'slot') return <><strong>Drücke Enter oder Leertaste</strong> um das Rad zu drehen — kein Mausklick nötig.</>
-  if (mode === 'choice') return <><strong>Pfeiltasten</strong> zum Navigieren, <strong>Enter</strong> zum Wählen — oder direkt eine Ziffer tippen.</>
+  if (mode === 'slot') return <><strong>Drücke den Knopf</strong> um das Rad zu drehen.</>
+  if (mode === 'choice') return <><strong>Wähle eine Zahl</strong> — tippe direkt darauf.</>
   return <><strong>Löse die Gleichung</strong> und tippe das Ergebnis ein — automatische Auswertung.</>
 }
 

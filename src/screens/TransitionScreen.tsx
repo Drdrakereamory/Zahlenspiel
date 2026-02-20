@@ -14,7 +14,7 @@ export default function TransitionScreen({ onContinue }: Props) {
           </svg>
         </div>
 
-        <div className="font-display text-[44px] tracking-[3px] text-amber mb-2.5">AB JETZT: CHAOS</div>
+        <div className="font-display text-[34px] sm:text-[44px] tracking-[2px] sm:tracking-[3px] text-amber mb-2.5">AB JETZT: CHAOS</div>
         <div className="text-[14px] text-text-secondary leading-[1.7] mb-[22px]">
           Die nächsten 3 Versuche gehören nicht mehr dir allein. Der Algorithmus mischt mit.
         </div>
@@ -76,7 +76,7 @@ export default function TransitionScreen({ onContinue }: Props) {
         </button>
 
         <p className="text-center text-[11px] text-text-muted mt-2.5 tracking-[1px] uppercase font-semibold">
-          Beliebige Taste drücken um weiterzumachen
+          Antippen oder Taste drücken
         </p>
       </div>
     </div>

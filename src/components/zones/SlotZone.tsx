@@ -16,7 +16,7 @@ export default function SlotZone({ slotNumber, slotSpinning, slotDone, onSpin }:
           backgroundImage: 'repeating-linear-gradient(0deg, rgba(240,112,48,0.03) 0px, transparent 2px, transparent 20px)',
         }}
       >
-        <div className="font-display text-[88px] text-amber leading-none">
+        <div className="font-display text-[68px] sm:text-[88px] text-amber leading-none">
           {slotNumber ?? '?'}
         </div>
         <div className="text-[12px] tracking-[2px] text-text-secondary uppercase mt-1">

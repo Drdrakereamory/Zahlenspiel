@@ -30,7 +30,7 @@ export default function EndScreen({ won, attempt, secretNumber, isNewHighscore, 
         </div>
 
         {/* Title */}
-        <div className={`font-display text-[52px] tracking-[3px] mb-2 ${won ? 'text-amber' : 'text-red'}`}>
+        <div className={`font-display text-[40px] sm:text-[52px] tracking-[2px] sm:tracking-[3px] mb-2 ${won ? 'text-amber' : 'text-red'}`}>
           {won ? 'GEWONNEN' : 'GAME OVER'}
         </div>
 
@@ -50,7 +50,7 @@ export default function EndScreen({ won, attempt, secretNumber, isNewHighscore, 
           ].map(({ label, value }) => (
             <div key={label} className="flex-1 bg-input-bg rounded-xl p-3.5 border border-card-border">
               <div className="text-[10px] font-extrabold tracking-[1px] uppercase text-text-muted mb-1">{label}</div>
-              <div className="font-display text-[34px] text-amber">{value}</div>
+              <div className="font-display text-[28px] sm:text-[34px] text-amber">{value}</div>
             </div>
           ))}
         </div>
@@ -70,7 +70,7 @@ export default function EndScreen({ won, attempt, secretNumber, isNewHighscore, 
         </button>
 
         <p className="text-center text-[11px] text-text-muted mt-2.5 tracking-[1px] uppercase font-semibold">
-          Beliebige Taste für eine neue Runde
+          Antippen oder Taste für eine neue Runde
         </p>
       </div>
     </div>

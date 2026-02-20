@@ -92,7 +92,7 @@ export default function App() {
   const hs = getHighscore(state.selectedLevel)
 
   return (
-    <div className="bg-bg min-h-screen flex items-center justify-center p-5 font-body text-text-primary relative">
+    <div className="bg-bg min-h-screen flex items-start sm:items-center justify-center px-3 py-5 sm:p-5 font-body text-text-primary relative">
       <div className="w-full max-w-[460px] relative z-[1]">
         {state.screen === 'start' && (
           <StartScreen

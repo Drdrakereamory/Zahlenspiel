@@ -16,8 +16,8 @@ export default function StartScreen({ selectedLevel, onSelectLevel, onStart }: P
     <div className="animate-fadeUp">
       {/* Logo */}
       <div className="text-center mb-6">
-        <div className="inline-flex items-center justify-center w-[72px] h-[72px] bg-card border border-card-border rounded-[20px] text-amber mb-3.5 animate-bounceIn">
-          <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <div className="inline-flex items-center justify-center w-[58px] h-[58px] sm:w-[72px] sm:h-[72px] bg-card border border-card-border rounded-[20px] text-amber mb-3 sm:mb-3.5 animate-bounceIn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
             <rect x="2" y="2" width="20" height="20" rx="3"/>
             <circle cx="8" cy="8" r="1.2" fill="currentColor" stroke="none"/>
             <circle cx="16" cy="8" r="1.2" fill="currentColor" stroke="none"/>
@@ -26,7 +26,7 @@ export default function StartScreen({ selectedLevel, onSelectLevel, onStart }: P
             <circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/>
           </svg>
         </div>
-        <h1 className="font-display text-[64px] tracking-[6px] leading-none text-text-primary">
+        <h1 className="font-display text-[46px] sm:text-[64px] tracking-[3px] sm:tracking-[6px] leading-none text-text-primary">
           LUCKY <span className="text-amber">NUMBER</span>
         </h1>
         <p className="mt-2.5 text-[14px] italic text-text-secondary leading-relaxed">
@@ -76,7 +76,7 @@ export default function StartScreen({ selectedLevel, onSelectLevel, onStart }: P
                   {lvl.digits === 2 ? 'Zweistellig' : lvl.digits === 3 ? 'Dreistellig' : 'Vierstellig'} · immer genau {lvl.digits} Ziffern
                 </div>
               </div>
-              <span className="font-display text-[22px] text-amber">
+              <span className="font-display text-[18px] sm:text-[22px] text-amber shrink-0">
                 {lvl.id === 1 ? '01–99' : lvl.id === 2 ? '100–999' : '1000–9999'}
               </span>
             </button>

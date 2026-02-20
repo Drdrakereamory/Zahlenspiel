@@ -17,7 +17,7 @@ export default function NormalZone({ digits, value, resultState, onInput }: Prop
   }, []) // runs once on mount (component is remounted per attempt via key prop)
 
   return (
-    <div className="px-5 pb-5">
+    <div className="px-5 pb-5" onClick={() => inputRef.current?.focus()}>
       <DigitDisplay digits={digits} value={value} resultState={resultState} />
       <input
         ref={inputRef}

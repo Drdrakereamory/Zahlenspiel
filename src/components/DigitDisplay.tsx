@@ -6,15 +6,15 @@ interface Props {
 
 export default function DigitDisplay({ digits, value, resultState }: Props) {
   return (
-    <div className="flex justify-center gap-2.5 mb-2 cursor-text">
+    <div className="flex justify-center gap-1.5 sm:gap-2.5 mb-2 cursor-text">
       {Array.from({ length: digits }, (_, i) => {
         const char = value[i]
         const isFilled = i < value.length
         const isActive = i === value.length && !resultState
 
         let slotClass =
-          'flex items-center justify-center w-[72px] h-[92px] rounded-xl border-2 ' +
-          'font-display text-[62px] transition-all duration-200 select-none bg-input-bg '
+          'flex items-center justify-center w-[56px] h-[76px] sm:w-[72px] sm:h-[92px] rounded-xl border-2 ' +
+          'font-display text-[48px] sm:text-[62px] transition-all duration-200 select-none bg-input-bg '
 
         if (resultState === 'correct') {
           slotClass += 'border-amber bg-[rgba(245,197,24,0.1)] text-amber'
