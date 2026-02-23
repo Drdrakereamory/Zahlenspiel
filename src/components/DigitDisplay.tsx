@@ -17,7 +17,7 @@ export default function DigitDisplay({ digits, value, resultState }: Props) {
           'font-display text-[48px] sm:text-[62px] transition-all duration-200 select-none bg-input-bg '
 
         if (resultState === 'correct') {
-          slotClass += 'border-amber bg-[rgba(245,197,24,0.1)] text-amber'
+          slotClass += 'border-amber bg-[rgba(251,191,36,0.1)] text-amber'
         } else if (resultState === 'wrong') {
           slotClass += 'border-red text-red animate-shake'
         } else if (isFilled) {

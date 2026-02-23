@@ -7,8 +7,8 @@ body::before {
   position: fixed;
   inset: 0;
   background-image:
-    repeating-linear-gradient(0deg, rgba(240,112,48,0.04) 0px, transparent 1px, transparent 40px),
-    repeating-linear-gradient(90deg, rgba(240,112,48,0.04) 0px, transparent 1px, transparent 40px);
+    repeating-linear-gradient(0deg, rgba(249,115,22,0.03) 0px, transparent 1px, transparent 48px),
+    repeating-linear-gradient(90deg, rgba(249,115,22,0.03) 0px, transparent 1px, transparent 48px);
   pointer-events: none;
   z-index: 0;
 }

@@ -7,6 +7,15 @@ import { useHighscores } from './useHighscores'
 const rnd = <T>(arr: readonly T[]): T => arr[Math.floor(Math.random() * arr.length)]
 const randBetween = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min
 
+function buildModeMap(): Record<number, GameMode> {
+  const map: Record<number, GameMode> = {}
+  for (let i = 1; i <= CONFIG.maxAttempts; i++) map[i] = 'normal'
+  // Pick 5 chaos modes from the full pool (6 modes), assign to attempts 4–8
+  const shuffled = [...CONFIG.chaosModes].sort(() => Math.random() - 0.5).slice(0, 5)
+  ;[4, 5, 6, 7, 8].forEach((attempt, i) => { map[attempt] = shuffled[i] })
+  return map
+}
+
 function buildChoiceOptions(levelId: number, secret: number): number[] {
   const lvl = CONFIG.levels.find(x => x.id === levelId)!
   const opts = new Set<number>([secret])
@@ -15,20 +24,102 @@ function buildChoiceOptions(levelId: number, secret: number): number[] {
 }
 
 function buildEquation(secret: number): string {
-  if (Math.random() < 0.5) {
-    const a = randBetween(1, secret - 1)
-    return `${a} + ${secret - a} = ?`
-  }
+  type EqFn = () => string
+  const candidates: EqFn[] = [
+    // Addition: a + b = secret
+    () => {
+      const a = randBetween(1, secret - 1)
+      return `${a} + ${secret - a} = ?`
+    },
+    // Subtraction: (secret + k) − k = secret
+    () => {
+      const k = randBetween(1, Math.max(1, Math.floor(secret / 3)))
+      return `${secret + k} − ${k} = ?`
+    },
+  ]
+
+  // Multiplication: a × b = secret
   const divisors: number[] = []
   for (let i = 2; i <= Math.sqrt(secret); i++) {
     if (secret % i === 0) divisors.push(i)
   }
   if (divisors.length > 0) {
-    const a = divisors[Math.floor(Math.random() * divisors.length)]
-    return `${a} × ${secret / a} = ?`
+    candidates.push(() => {
+      const a = rnd(divisors)
+      return `${a} × ${secret / a} = ?`
+    })
   }
-  const a = randBetween(1, secret - 1)
-  return `${a} + ${secret - a} = ?`
+
+  // Division: (secret × k) ÷ k = secret (k = 2–5, product stays readable)
+  const divFactors = [2, 3, 4, 5].filter(k => secret * k <= 99999)
+  if (divFactors.length > 0) {
+    candidates.push(() => {
+      const k = rnd(divFactors)
+      return `${secret * k} ÷ ${k} = ?`
+    })
+  }
+
+  // Multi-step: a × b + c = secret (a, b small 2–9; c = remainder ≥ 0)
+  const multiPairs: [number, number][] = []
+  for (let a = 2; a <= 9; a++) {
+    for (let b = 2; b <= 9; b++) {
+      if (a * b < secret) multiPairs.push([a, b])
+    }
+  }
+  if (multiPairs.length > 0) {
+    candidates.push(() => {
+      const [a, b] = rnd(multiPairs)
+      const c = secret - a * b
+      return `${a} × ${b} + ${c} = ?`
+    })
+  }
+
+  return rnd(candidates)()
+}
+
+function buildWordProblem(secret: number): string {
+  type ProblemFn = () => string
+  const candidates: ProblemFn[] = []
+
+  // Subtraction: (secret + k) items, remove k
+  const k = randBetween(Math.max(1, Math.floor(secret * 0.2)), Math.min(secret - 1, Math.floor(secret * 0.5) + 5))
+  candidates.push(() => `A bakery baked ${secret + k} rolls and sold ${k}. How many rolls are left?`)
+  candidates.push(() => `A library had ${secret + k} books. ${k} were checked out. How many remain on the shelf?`)
+
+  // Addition: two parts combine
+  if (secret >= 2) {
+    const a = randBetween(1, secret - 1)
+    candidates.push(() => `${a} red marbles and ${secret - a} blue marbles are in a jar. How many marbles total?`)
+    candidates.push(() => `A bus picks up ${a} passengers at stop A and ${secret - a} at stop B. How many passengers total?`)
+  }
+
+  // Division: secret × k total, split into k equal groups
+  const divFactors = [2, 3, 4, 5].filter(k => secret * k <= 9999)
+  if (divFactors.length > 0) {
+    const dk = rnd(divFactors)
+    candidates.push(() => `${secret * dk} medals split equally among ${dk} countries. How many does each country receive?`)
+    candidates.push(() => `${secret * dk} candies shared equally among ${dk} kids. How many does each kid get?`)
+  }
+
+  // Multiplication: a rows × b items = secret
+  const divisors: number[] = []
+  for (let i = 2; i <= Math.min(12, Math.sqrt(secret)); i++) {
+    if (secret % i === 0) divisors.push(i)
+  }
+  if (divisors.length > 0) {
+    const a = rnd(divisors)
+    const b = secret / a
+    candidates.push(() => `A field has ${a} rows of ${b} sunflowers each. How many sunflowers in total?`)
+    candidates.push(() => `${a} shelves hold ${b} books each. How many books are there in total?`)
+  }
+
+  return rnd(candidates)()
+}
+
+const defaultModeMap = (): Record<number, GameMode> => {
+  const m: Record<number, GameMode> = {}
+  for (let i = 1; i <= CONFIG.maxAttempts; i++) m[i] = 'normal'
+  return m
 }
 
 function getInitialState(): GameState {
@@ -39,20 +130,40 @@ function getInitialState(): GameState {
     attempt: 0,
     dotStates: Array(CONFIG.maxAttempts).fill('pending') as DotState[],
     currentMode: 'normal',
+    modeMap: defaultModeMap(),
     timerLeft: CONFIG.timerSeconds,
     timerRunning: false,
     typedValue: '',
     feedbackType: 'info',
-    feedbackText: 'Viel Glück — die Zahl wartet auf dich.',
+    feedbackText: 'Good luck — the number awaits.',
     feedbackVisible: true,
     transitionShown: false,
     choiceOptions: [],
     equation: '',
+    quizQuestion: '',
     slotNumber: null,
     slotSpinning: false,
     slotDone: false,
+    modeIntroTimeLeft: 0,
     won: false,
     isNewHighscore: false,
+  }
+}
+
+function buildModeStart(mode: GameMode, levelId: number, secret: number, choiceOptions?: number[], equation?: string, quizQuestion?: string) {
+  return {
+    currentMode: mode,
+    timerLeft: CONFIG.timerSeconds,
+    typedValue: '',
+    feedbackText: 'The number awaits.',
+    feedbackVisible: true,
+    feedbackType: 'info' as FeedbackType,
+    slotNumber: null,
+    slotSpinning: false,
+    slotDone: false,
+    choiceOptions: mode === 'choice' ? (choiceOptions ?? buildChoiceOptions(levelId, secret)) : [],
+    equation: mode === 'brain' ? (equation ?? buildEquation(secret)) : '',
+    quizQuestion: mode === 'quiz' ? (quizQuestion ?? buildWordProblem(secret)) : '',
   }
 }
 
@@ -64,7 +175,8 @@ function reducer(state: GameState, action: GameAction): GameState {
     case 'START_GAME': {
       const lvl = CONFIG.levels.find(x => x.id === state.selectedLevel)!
       const secret = randBetween(lvl.min, lvl.max)
-      const mode = CONFIG.modeMap[1] as GameMode
+      const modeMap = buildModeMap()
+      const mode = modeMap[1] as GameMode
       return {
         ...getInitialState(),
         selectedLevel: state.selectedLevel,
@@ -72,17 +184,12 @@ function reducer(state: GameState, action: GameAction): GameState {
         screen: 'game',
         attempt: 1,
         dotStates: Array(CONFIG.maxAttempts).fill('pending') as DotState[],
-        currentMode: mode,
-        timerLeft: CONFIG.timerSeconds,
+        modeMap,
         timerRunning: true,
-        feedbackText: 'Die Zahl wartet auf dich.',
-        feedbackVisible: true,
-        choiceOptions: mode === 'choice' ? buildChoiceOptions(state.selectedLevel, secret) : [],
-        equation: mode === 'brain' ? buildEquation(secret) : '',
+        ...buildModeStart(mode, state.selectedLevel, secret),
       }
     }
 
-    // Show transition screen — increment attempt to 4 so slot mode loads correctly
     case 'SHOW_TRANSITION':
       return {
         ...state,
@@ -94,22 +201,27 @@ function reducer(state: GameState, action: GameAction): GameState {
       }
 
     case 'CONTINUE_FROM_TRANSITION': {
-      const mode = CONFIG.modeMap[state.attempt] as GameMode
+      const mode = state.modeMap[state.attempt] as GameMode
+      const introTime = CONFIG.modeIntroTimes[mode]
+      return {
+        ...state,
+        screen: 'mode-intro',
+        timerRunning: false,
+        modeIntroTimeLeft: introTime,
+        ...buildModeStart(mode, state.selectedLevel, state.secretNumber),
+      }
+    }
+
+    case 'MODE_INTRO_TICK':
+      return { ...state, modeIntroTimeLeft: Math.max(0, state.modeIntroTimeLeft - 0.1) }
+
+    case 'ENTER_GAME_FROM_INTRO': {
+      if (state.screen !== 'mode-intro') return state
       return {
         ...state,
         screen: 'game',
         timerRunning: true,
         timerLeft: CONFIG.timerSeconds,
-        currentMode: mode,
-        typedValue: '',
-        feedbackText: 'Die Zahl wartet auf dich.',
-        feedbackVisible: true,
-        feedbackType: 'info',
-        slotNumber: null,
-        slotSpinning: false,
-        slotDone: false,
-        choiceOptions: mode === 'choice' ? buildChoiceOptions(state.selectedLevel, state.secretNumber) : [],
-        equation: mode === 'brain' ? buildEquation(state.secretNumber) : '',
       }
     }
 
@@ -121,22 +233,26 @@ function reducer(state: GameState, action: GameAction): GameState {
 
     case 'NEXT_ATTEMPT': {
       const nextAttempt = state.attempt + 1
-      const mode = CONFIG.modeMap[nextAttempt] as GameMode
+      const mode = state.modeMap[nextAttempt] as GameMode
+      const modeBase = buildModeStart(mode, state.selectedLevel, state.secretNumber, action.choiceOptions, action.equation, action.quizQuestion)
+      if (mode !== 'normal') {
+        // Chaos attempt → show mode intro first
+        return {
+          ...state,
+          attempt: nextAttempt,
+          screen: 'mode-intro',
+          timerRunning: false,
+          modeIntroTimeLeft: CONFIG.modeIntroTimes[mode],
+          ...modeBase,
+        }
+      }
+      // Normal attempt → go straight to game
       return {
         ...state,
         attempt: nextAttempt,
-        typedValue: '',
-        timerLeft: CONFIG.timerSeconds,
+        screen: 'game',
         timerRunning: true,
-        currentMode: mode,
-        feedbackText: 'Die Zahl wartet auf dich.',
-        feedbackVisible: true,
-        feedbackType: 'info',
-        slotNumber: null,
-        slotSpinning: false,
-        slotDone: false,
-        choiceOptions: mode === 'choice' ? (action.choiceOptions ?? buildChoiceOptions(state.selectedLevel, state.secretNumber)) : [],
-        equation: mode === 'brain' ? (action.equation ?? buildEquation(state.secretNumber)) : '',
+        ...modeBase,
       }
     }
 
@@ -207,10 +323,9 @@ export function useGame() {
   const lastTickRef = useRef(Math.ceil(CONFIG.timerSeconds))
   const slotIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const pendingNextRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  // Track whether a timeout has been dispatched to prevent double-dispatch
   const timeoutFiredRef = useRef(false)
 
-  // Timer interval
+  // Game timer interval
   useEffect(() => {
     if (!state.timerRunning) {
       lastTickRef.current = Math.ceil(CONFIG.timerSeconds)
@@ -223,7 +338,7 @@ export function useGame() {
     return () => clearInterval(id)
   }, [state.timerRunning, state.attempt])
 
-  // Timer side-effects: tick sound + timeout detection
+  // Game timer side-effects: tick sound + timeout detection
   useEffect(() => {
     if (!state.timerRunning) return
 
@@ -239,6 +354,23 @@ export function useGame() {
       playSound('timeout')
     }
   }, [state.timerLeft, state.timerRunning, playSound])
+
+  // Mode intro countdown interval
+  useEffect(() => {
+    if (state.screen !== 'mode-intro') return
+    const id = setInterval(() => {
+      dispatch({ type: 'MODE_INTRO_TICK' })
+    }, 100)
+    return () => clearInterval(id)
+  }, [state.screen, state.attempt])
+
+  // Mode intro auto-complete when time runs out
+  useEffect(() => {
+    if (state.screen !== 'mode-intro') return
+    if (state.modeIntroTimeLeft <= 0) {
+      dispatch({ type: 'ENTER_GAME_FROM_INTRO' })
+    }
+  }, [state.modeIntroTimeLeft, state.screen])
 
   // After a result (correct/wrong/timeout): schedule next action
   useEffect(() => {
@@ -265,15 +397,15 @@ export function useGame() {
         const delay = dotState === 'timeout' ? 1400 : 1500
         const nextAttempt = state.attempt + 1
         pendingNextRef.current = setTimeout(() => {
-          // Attempt 4 triggers the transition screen (increment happens inside SHOW_TRANSITION)
           if (nextAttempt === 4 && !state.transitionShown) {
             dispatch({ type: 'SHOW_TRANSITION' })
           } else {
-            const mode = CONFIG.modeMap[nextAttempt] as GameMode
+            const mode = state.modeMap[nextAttempt] as GameMode
             dispatch({
               type: 'NEXT_ATTEMPT',
               choiceOptions: mode === 'choice' ? buildChoiceOptions(state.selectedLevel, state.secretNumber) : undefined,
               equation: mode === 'brain' ? buildEquation(state.secretNumber) : undefined,
+              quizQuestion: mode === 'quiz' ? buildWordProblem(state.secretNumber) : undefined,
             })
           }
         }, delay)
@@ -286,7 +418,7 @@ export function useGame() {
         pendingNextRef.current = null
       }
     }
-  }, [state.dotStates, state.attempt, state.timerRunning, state.screen, state.transitionShown, state.selectedLevel, state.secretNumber, saveHighscore])
+  }, [state.dotStates, state.attempt, state.timerRunning, state.screen, state.transitionShown, state.selectedLevel, state.secretNumber, state.modeMap, saveHighscore])
 
   const selectLevel = useCallback((level: number) => {
     playSound('nav')
@@ -301,6 +433,10 @@ export function useGame() {
     dispatch({ type: 'CONTINUE_FROM_TRANSITION' })
   }, [])
 
+  const skipModeIntro = useCallback(() => {
+    dispatch({ type: 'ENTER_GAME_FROM_INTRO' })
+  }, [])
+
   const processGuess = useCallback((val: number) => {
     const isCorrect = val === state.secretNumber
     playSound(isCorrect ? 'correct' : 'wrong')
@@ -313,7 +449,6 @@ export function useGame() {
     dispatch({ type: 'SET_TYPED', value: clean })
     if (clean.length > 0) playSound('digit')
     if (clean.length === lvl.digits) {
-      // Stop timer immediately, then process guess after short delay
       dispatch({ type: 'PAUSE_TIMER' })
       const num = parseInt(clean)
       setTimeout(() => processGuess(num), 120)
@@ -361,6 +496,7 @@ export function useGame() {
     selectLevel,
     startGame,
     continueFromTransition,
+    skipModeIntro,
     processGuess,
     handleTyped,
     spinSlot,

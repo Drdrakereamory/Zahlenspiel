@@ -1,8 +1,23 @@
+import { GameMode } from '../types'
+
 interface Props {
   onContinue: () => void
+  modeMap: Record<number, GameMode>
 }
 
-export default function TransitionScreen({ onContinue }: Props) {
+const modeInfo: Record<GameMode, { label: string; desc: string; color: string; bgColor: string; borderClass: string }> = {
+  normal: { label: 'Normal',       desc: 'Type your guess.',                      color: '#fbbf24', bgColor: 'rgba(251,191,36,0.15)',  borderClass: 'border-amber-dim' },
+  slot:   { label: 'Slot Machine', desc: 'Spin the wheel — fate decides.',        color: '#f97316', bgColor: 'rgba(249,115,22,0.15)',  borderClass: 'border-orange-dim' },
+  choice: { label: '1 of 10',      desc: 'Ten numbers — pick the right one.',     color: '#d946ef', bgColor: 'rgba(217,70,239,0.15)', borderClass: 'border-magenta-dim' },
+  brain:  { label: 'Brain Mode',   desc: 'Solve the equation, type the answer.',  color: '#2dd4bf', bgColor: 'rgba(45,212,191,0.15)', borderClass: 'border-teal-dim' },
+  range:  { label: 'Range Hint',   desc: 'A number range is shown — find it.',    color: '#fbbf24', bgColor: 'rgba(251,191,36,0.15)',  borderClass: 'border-amber-dim' },
+  mirror: { label: 'Mirror',       desc: 'Digits are reversed — unscramble it.',  color: '#6366f1', bgColor: 'rgba(99,102,241,0.15)',  borderClass: 'border-indigo-dim' },
+  quiz:   { label: 'Quiz',         desc: 'Solve the word problem — type the answer.', color: '#84cc16', bgColor: 'rgba(132,204,22,0.15)', borderClass: 'border-lime-dim' },
+}
+
+export default function TransitionScreen({ onContinue, modeMap }: Props) {
+  const chaosAttempts = [4, 5, 6, 7, 8].filter(n => modeMap[n] && modeMap[n] !== 'normal')
+
   return (
     <div className="animate-fadeUp">
       <div className="bg-card rounded-2xl px-7 py-10 border border-card-border shadow-[0_4px_32px_rgba(0,0,0,0.4)] text-center">
@@ -14,69 +29,52 @@ export default function TransitionScreen({ onContinue }: Props) {
           </svg>
         </div>
 
-        <div className="font-display text-[34px] sm:text-[44px] tracking-[2px] sm:tracking-[3px] text-amber mb-2.5">AB JETZT: CHAOS</div>
+        <div className="font-display text-[34px] sm:text-[44px] tracking-[2px] sm:tracking-[3px] text-amber mb-2.5">CHAOS BEGINS</div>
         <div className="text-[14px] text-text-secondary leading-[1.7] mb-[22px]">
-          Die nächsten 3 Versuche gehören nicht mehr dir allein. Der Algorithmus mischt mit.
+          The next attempts are no longer yours to control.<br />The algorithm plays along.
         </div>
 
         <div className="flex flex-col gap-[9px] mb-[22px] text-left">
-          {/* Slot */}
-          <div className="flex items-center gap-3 px-[14px] py-3 rounded-[10px] border bg-[rgba(240,112,48,0.15)] border-orange-dim">
-            <div className="shrink-0 text-orange">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 12h10M12 7v10"/>
-              </svg>
-            </div>
-            <div className="text-[13px] font-semibold text-text-secondary">
-              <strong className="text-text-primary">V4 — Slot Mode</strong> Dreh das Rad. Kein Einfluss.
-            </div>
-            <span className="ml-auto text-[11px] font-extrabold px-[10px] py-[3px] rounded-full whitespace-nowrap bg-orange-dim text-orange">V4</span>
-          </div>
-
-          {/* Choice */}
-          <div className="flex items-center gap-3 px-[14px] py-3 rounded-[10px] border bg-[rgba(192,64,224,0.15)] border-magenta-dim">
-            <div className="shrink-0 text-magenta">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
-                <line x1="12" y1="17" x2="12.01" y2="17"/>
-              </svg>
-            </div>
-            <div className="text-[13px] font-semibold text-text-secondary">
-              <strong className="text-text-primary">V5 — 1 aus 10</strong> Zehn Zahlen. Wähle richtig.
-            </div>
-            <span className="ml-auto text-[11px] font-extrabold px-[10px] py-[3px] rounded-full whitespace-nowrap bg-magenta-dim text-magenta">V5</span>
-          </div>
-
-          {/* Brain */}
-          <div className="flex items-center gap-3 px-[14px] py-3 rounded-[10px] border bg-[rgba(32,176,154,0.15)] border-teal-dim">
-            <div className="shrink-0 text-teal">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96-.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 4.44-1.66Z"/>
-                <path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96-.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-4.44-1.66Z"/>
-              </svg>
-            </div>
-            <div className="text-[13px] font-semibold text-text-secondary">
-              <strong className="text-text-primary">V6 — Brain Mode</strong> Löse die Gleichung schnell.
-            </div>
-            <span className="ml-auto text-[11px] font-extrabold px-[10px] py-[3px] rounded-full whitespace-nowrap bg-teal-dim text-teal">V6</span>
-          </div>
+          {chaosAttempts.map(n => {
+            const mode = modeMap[n]
+            const info = modeInfo[mode]
+            return (
+              <div
+                key={n}
+                className={`flex items-center gap-3 px-[14px] py-3 rounded-[10px] border ${info.borderClass}`}
+                style={{ background: info.bgColor }}
+              >
+                <div className="shrink-0 w-2 h-2 rounded-full" style={{ background: info.color }} />
+                <div className="text-[13px] font-semibold text-text-secondary">
+                  <strong className="text-text-primary">Try {n} — {info.label}</strong>
+                  <span className="ml-1">{info.desc}</span>
+                </div>
+                <span
+                  className="ml-auto text-[11px] font-extrabold px-[10px] py-[3px] rounded-full whitespace-nowrap"
+                  style={{ color: info.color, background: info.bgColor }}
+                >
+                  #{n}
+                </span>
+              </div>
+            )
+          })}
         </div>
 
         <button
           onClick={onContinue}
-          className="flex items-center justify-center gap-2.5 w-full py-4 bg-orange text-[#1a0800]
+          className="flex items-center justify-center gap-2.5 w-full py-4 bg-orange text-[#0c0c14]
             border-none rounded-xl font-display text-[24px] tracking-[3px] cursor-pointer
-            transition-all duration-200 shadow-[0_4px_18px_rgba(240,112,48,0.35)] outline-none
+            transition-all duration-200 shadow-[0_4px_18px_rgba(249,115,22,0.35)] outline-none
             hover:bg-[#ff8040] hover:-translate-y-0.5 focus:bg-[#ff8040]"
         >
-          LOS GEHT'S
+          LET'S GO
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
             <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
           </svg>
         </button>
 
         <p className="text-center text-[11px] text-text-muted mt-2.5 tracking-[1px] uppercase font-semibold">
-          Antippen oder Taste drücken
+          Tap or press any key
         </p>
       </div>
     </div>

@@ -1,5 +1,5 @@
-export type GameMode = 'normal' | 'slot' | 'choice' | 'brain'
-export type Screen = 'start' | 'transition' | 'game' | 'end'
+export type GameMode = 'normal' | 'slot' | 'choice' | 'brain' | 'range' | 'mirror' | 'quiz'
+export type Screen = 'start' | 'transition' | 'mode-intro' | 'game' | 'end'
 export type DotState = 'pending' | 'correct' | 'wrong' | 'timeout'
 export type FeedbackType = 'info' | 'low' | 'high' | 'win' | 'lose' | 'timeout'
 
@@ -18,6 +18,7 @@ export interface GameState {
   attempt: number
   dotStates: DotState[]
   currentMode: GameMode
+  modeMap: Record<number, GameMode>
   timerLeft: number
   timerRunning: boolean
   typedValue: string
@@ -27,9 +28,11 @@ export interface GameState {
   transitionShown: boolean
   choiceOptions: number[]
   equation: string
+  quizQuestion: string
   slotNumber: number | null
   slotSpinning: boolean
   slotDone: boolean
+  modeIntroTimeLeft: number
   // end screen
   won: boolean
   isNewHighscore: boolean
@@ -49,7 +52,9 @@ export type GameAction =
   | { type: 'CHOICE_PICK'; val: number }
   | { type: 'GO_TO_START' }
   | { type: 'SET_FEEDBACK'; feedbackType: FeedbackType; feedbackText: string }
-  | { type: 'NEXT_ATTEMPT'; choiceOptions?: number[]; equation?: string }
+  | { type: 'NEXT_ATTEMPT'; choiceOptions?: number[]; equation?: string; quizQuestion?: string }
   | { type: 'END_GAME'; won: boolean; isNewHighscore: boolean }
   | { type: 'SHOW_TRANSITION' }
   | { type: 'PAUSE_TIMER' }
+  | { type: 'MODE_INTRO_TICK' }
+  | { type: 'ENTER_GAME_FROM_INTRO' }

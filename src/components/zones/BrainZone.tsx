@@ -19,10 +19,10 @@ export default function BrainZone({ equation, digits, value, resultState, onInpu
 
   return (
     <div className="px-5 pb-5" onClick={() => inputRef.current?.focus()}>
-      <div className="bg-[rgba(32,176,154,0.08)] border border-teal-dim rounded-xl p-5 text-center mb-3.5">
+      <div className="bg-[rgba(45,212,191,0.08)] border border-teal-dim rounded-xl p-5 text-center mb-3.5">
         <div className="font-display text-[36px] sm:text-[46px] text-teal tracking-[3px] sm:tracking-[4px]">{equation}</div>
         <div className="text-[11px] text-teal opacity-70 mt-1 tracking-[1px] uppercase">
-          Ergebnis eingeben — kein Enter nötig
+          Type the answer — no Enter needed
         </div>
       </div>
       <DigitDisplay digits={digits} value={value} resultState={resultState} />

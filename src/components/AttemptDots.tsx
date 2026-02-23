@@ -1,17 +1,18 @@
 import { CONFIG } from '../config'
-import { DotState } from '../types'
+import { DotState, GameMode } from '../types'
 
 interface Props {
   dotStates: DotState[]
   attempt: number
+  modeMap: Record<number, GameMode>
 }
 
-export default function AttemptDots({ dotStates, attempt }: Props) {
+export default function AttemptDots({ dotStates, attempt, modeMap }: Props) {
   return (
     <div className="flex gap-1 flex-1">
       {Array.from({ length: CONFIG.maxAttempts }, (_, i) => {
         const state = dotStates[i]
-        const isSpecial = CONFIG.modeMap[i + 1] !== 'normal'
+        const isSpecial = modeMap[i + 1] !== 'normal'
         const isActive = i === attempt - 1 && state === 'pending'
 
         let className = 'flex-1 h-[7px] rounded-full transition-all duration-300 '
@@ -24,16 +25,13 @@ export default function AttemptDots({ dotStates, attempt }: Props) {
           className += 'bg-text-muted'
         } else if (isActive) {
           className += 'bg-orange animate-pulseAnim'
-        } else if (isSpecial) {
-          className += 'bg-card-border'
-          // special-pending: striped pattern via inline style
         } else {
           className += 'bg-card-border'
         }
 
         const style: React.CSSProperties = (!isActive && state === 'pending' && isSpecial)
           ? {
-              background: 'repeating-linear-gradient(45deg, #5a1068, #5a1068 3px, #401a1a 3px, #401a1a 6px)',
+              background: 'repeating-linear-gradient(45deg, #3b0b45, #3b0b45 3px, #1e1e30 3px, #1e1e30 6px)',
             }
           : {}
 
